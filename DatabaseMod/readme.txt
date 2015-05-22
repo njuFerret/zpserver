@@ -1,1 +1,1 @@
-Using FireFox Sqlite Manager Add-in to modify this db.
+﻿Using FireFox Sqlite Manager Add-in to modify this db.

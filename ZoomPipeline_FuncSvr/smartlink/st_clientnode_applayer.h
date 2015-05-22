@@ -1,4 +1,4 @@
-#ifndef CLIENTNODE_H
+﻿#ifndef CLIENTNODE_H
 #define CLIENTNODE_H
 
 #include <QObject>

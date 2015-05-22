@@ -1,4 +1,4 @@
-#ifndef ST_CROSS_SVR_MSG_H
+﻿#ifndef ST_CROSS_SVR_MSG_H
 #define ST_CROSS_SVR_MSG_H
 
 namespace ExampleServer{

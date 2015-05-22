@@ -1,4 +1,4 @@
-#ifndef ZP_PLWORKINGTHREAD_H
+﻿#ifndef ZP_PLWORKINGTHREAD_H
 #define ZP_PLWORKINGTHREAD_H
 
 #include <QObject>

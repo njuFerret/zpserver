@@ -1,4 +1,4 @@
-#ifndef ST_MSG_APPLAYER_H
+﻿#ifndef ST_MSG_APPLAYER_H
 #define ST_MSG_APPLAYER_H
 #include <qglobal.h>
 namespace ExampleServer{

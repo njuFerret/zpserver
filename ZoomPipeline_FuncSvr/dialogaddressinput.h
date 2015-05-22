@@ -1,4 +1,4 @@
-#ifndef DIALOGADDRESSINPUT_H
+﻿#ifndef DIALOGADDRESSINPUT_H
 #define DIALOGADDRESSINPUT_H
 
 #include <QDialog>

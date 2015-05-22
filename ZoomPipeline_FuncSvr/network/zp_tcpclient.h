@@ -1,4 +1,4 @@
-#ifndef QGHTCPCLIENT_H
+﻿#ifndef QGHTCPCLIENT_H
 #define QGHTCPCLIENT_H
 
 #include <QTcpSocket>

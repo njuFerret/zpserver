@@ -1,4 +1,4 @@
-#ifndef ST_LOGGER_H
+﻿#ifndef ST_LOGGER_H
 #define ST_LOGGER_H
 
 #include <QObject>

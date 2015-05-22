@@ -1,4 +1,4 @@
-#include "databaseresource.h"
+﻿#include "databaseresource.h"
 #include <QThread>
 #include <QMutexLocker>
 #include <QSqlError>

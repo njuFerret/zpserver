@@ -1,4 +1,4 @@
-#ifndef ST_CLIENT_TABLE_H
+﻿#ifndef ST_CLIENT_TABLE_H
 #define ST_CLIENT_TABLE_H
 
 #include <QObject>

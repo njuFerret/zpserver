@@ -1,4 +1,4 @@
-#include "ZP_TcpClient.h"
+﻿#include "ZP_TcpClient.h"
 #include <assert.h>
 
 ZP_TcpClient::ZP_TcpClient(QObject *parent,int nPayLoad)

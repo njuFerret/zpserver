@@ -1,4 +1,4 @@
-#ifndef ZP_CLUSTERTERM_H
+﻿#ifndef ZP_CLUSTERTERM_H
 #define ZP_CLUSTERTERM_H
 
 #include <QObject>

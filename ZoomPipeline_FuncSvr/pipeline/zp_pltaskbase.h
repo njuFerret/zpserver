@@ -1,4 +1,4 @@
-#ifndef ZP_PLTASKBASE_H
+﻿#ifndef ZP_PLTASKBASE_H
 #define ZP_PLTASKBASE_H
 
 #include <QObject>

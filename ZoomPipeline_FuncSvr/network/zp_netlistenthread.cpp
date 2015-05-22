@@ -1,4 +1,4 @@
-#include "zp_netlistenthread.h"
+﻿#include "zp_netlistenthread.h"
 namespace ZPNetwork{
 	zp_netListenThread::zp_netListenThread(QString  id, QHostAddress address ,quint16 port,bool bSSL,QObject *parent)
 		:QObject(parent)

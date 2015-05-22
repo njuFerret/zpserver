@@ -1,4 +1,4 @@
-/**
+﻿/**
   * @brief This is the Zoom-Pipeline Network engine by goldenhawking, 2013,2014
   */
 #ifndef ZP_NET_THREADPOOL_H

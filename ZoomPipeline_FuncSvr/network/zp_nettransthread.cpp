@@ -1,4 +1,4 @@
-#include "zp_nettransthread.h"
+﻿#include "zp_nettransthread.h"
 #include <QTcpSocket>
 #include <QSslSocket>
 #include <assert.h>

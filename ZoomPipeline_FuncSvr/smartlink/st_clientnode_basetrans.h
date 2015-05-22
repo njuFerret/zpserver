@@ -1,4 +1,4 @@
-#ifndef ST_CLIENTNODE_BASETRANS_H
+﻿#ifndef ST_CLIENTNODE_BASETRANS_H
 #define ST_CLIENTNODE_BASETRANS_H
 
 #include <QObject>

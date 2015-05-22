@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @brief class zp_netTransThread by goldenhawking, 2013,2014
  */
 #ifndef ZP_NETTRANSTHREAD_H

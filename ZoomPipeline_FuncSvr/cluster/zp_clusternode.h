@@ -1,4 +1,4 @@
-#ifndef ZP_CLUSTERNODE_H
+﻿#ifndef ZP_CLUSTERNODE_H
 #define ZP_CLUSTERNODE_H
 
 #include <QObject>

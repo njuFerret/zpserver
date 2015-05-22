@@ -1,4 +1,4 @@
-/**
+﻿/**
   * @breif zp_netListenThread is a controller class, running in a independance thread.
 */
 #ifndef ZP_NETLISTENTHREAD_H

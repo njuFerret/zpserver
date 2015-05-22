@@ -1,4 +1,4 @@
-#include "zpmainframe.h"
+﻿#include "zpmainframe.h"
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>

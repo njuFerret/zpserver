@@ -1,4 +1,4 @@
-#include "maindialog.h"
+﻿#include "maindialog.h"
 #include "ui_maindialog.h"
 #include "../ZoomPipeline_FuncSvr/smartlink/st_message.h"
 #include "../ZoomPipeline_FuncSvr/smartlink/st_msg_applayer.h"

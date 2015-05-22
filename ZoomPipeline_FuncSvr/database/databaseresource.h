@@ -1,4 +1,4 @@
-#ifndef DATABASERESOURCE_H
+﻿#ifndef DATABASERESOURCE_H
 #define DATABASERESOURCE_H
 
 #include <QObject>

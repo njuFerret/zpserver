@@ -1,4 +1,4 @@
-#ifndef CROSS_SVR_MESSAGES_H
+﻿#ifndef CROSS_SVR_MESSAGES_H
 #define CROSS_SVR_MESSAGES_H
 #include <qglobal.h>
 namespace ZP_Cluster{

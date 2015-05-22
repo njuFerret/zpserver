@@ -1,4 +1,4 @@
-#include "maindialog.h"
+﻿#include "maindialog.h"
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>

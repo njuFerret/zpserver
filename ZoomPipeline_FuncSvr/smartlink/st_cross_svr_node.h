@@ -1,4 +1,4 @@
-#ifndef ST_CROSS_SVR_NODE_H
+﻿#ifndef ST_CROSS_SVR_NODE_H
 #define ST_CROSS_SVR_NODE_H
 #include "../cluster/zp_clusternode.h"
 #include "st_cross_svr_msg.h"

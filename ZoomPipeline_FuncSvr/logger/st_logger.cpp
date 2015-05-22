@@ -1,4 +1,4 @@
-#include "st_logger.h"
+﻿#include "st_logger.h"
 #include <QTextStream>
 namespace STMsgLogger{
 	st_logger::st_logger(QObject *parent) :
