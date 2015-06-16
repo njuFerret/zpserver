@@ -15,3 +15,6 @@ HEADERS += qghtcpclient.h qtcpclienttest.h \
 FORMS += qtcpclienttest.ui
 SOURCES += main.cpp qghtcpclient.cpp qtcpclienttest.cpp
 RESOURCES += qtcpclienttest.qrc
+
+TRANSLATIONS += QTcpClientTest_zh_CN.ts
+OTHER_FILES += QTcpClientTest_zh_CN.ts
