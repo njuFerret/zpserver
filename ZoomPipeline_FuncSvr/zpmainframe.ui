@@ -1036,7 +1036,7 @@
      <x>0</x>
      <y>0</y>
      <width>640</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Control">
@@ -1200,6 +1200,22 @@
     <hint type="destinationlabel">
      <x>346</x>
      <y>393</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial_plain_trans_threads</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>progressBar_plain_threads</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>252</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>150</y>
     </hint>
    </hints>
   </connection>

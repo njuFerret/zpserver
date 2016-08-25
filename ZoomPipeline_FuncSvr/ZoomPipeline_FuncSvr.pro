@@ -9,7 +9,7 @@ unix:QMAKE_CXXFLAGS += -std=c++11
 win32-g++: QMAKE_CXXFLAGS += -std=c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ZoomPipeline_FuncSvr
+TARGET = $$OUT_PWD/../bin/ZoomPipeline_FuncSvr
 TEMPLATE = app
 
 
