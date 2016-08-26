@@ -65,17 +65,24 @@ void QTcpClientTest::on_client_trasferred(qint64 dtw)
 	QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
 	if (pSock)
 	{
+#if (ZP_WANTSSL!=0)
 		QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sender());
 		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
 		if (pSockSsl)
 			displayMessage(QString("client %1 Transferrd %2 bytes.").arg(pSockSsl->uuid()).arg(dtw));
 		else if (pSockTcp)
 			displayMessage(QString("client %1 Transferrd %2 bytes.").arg(pSockTcp->uuid()).arg(dtw));
+#else
+		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
+		if (pSockTcp)
+			displayMessage(QString("client %1 Transferrd %2 bytes.").arg(pSockTcp->uuid()).arg(dtw));
+#endif
 	}
 
 }
 void QTcpClientTest::on_client_connected()
 {
+#if (ZP_WANTSSL!=0)
 	QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sender());
 	QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
 
@@ -113,10 +120,30 @@ void QTcpClientTest::on_client_connected()
 		pMsg->tmStamp = 0;
 		(pSockTcp)->SendData(array);
 	}
+#else
+	QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
+	if (pSockTcp)
+	{
+		pSockTcp->geneGlobalUUID(ui.lineEdit_globalFile->text());
+		if (pSockTcp->uuid()>m_maxUUID)
+			m_maxUUID = pSockTcp->uuid();
+		if (pSockTcp->uuid()<m_minUUID)
+			m_minUUID = pSockTcp->uuid();
 
+		displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
+		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
+		char * ptr = array.data();
+		EXAMPLE_HEARTBEATING * pMsg = (EXAMPLE_HEARTBEATING *)ptr;
+		pMsg->Mark = 0xBEBE;
+		pMsg->source_id = pSockTcp->uuid();
+		pMsg->tmStamp = 0;
+		(pSockTcp)->SendData(array);
+	}
+#endif
 }
 void QTcpClientTest::on_client_disconnected()
 {
+#if (ZP_WANTSSL!=0)
 	QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sender());
 	QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
 	if (pSockSsl)
@@ -143,18 +170,39 @@ void QTcpClientTest::on_client_disconnected()
 		m_clients.remove(pSockTcp);
 		pSockTcp->deleteLater();
 	}
+#else
+	QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
+	if (pSockTcp)
+	{
+		displayMessage(QString("client %1 disconnected.").arg(pSockTcp->uuid()));
+		//disconnect the signal immediately so that the system resource could be freed.
+		disconnect(pSockTcp, SIGNAL(readyRead()),this, SLOT(new_data_recieved()));
+		disconnect(pSockTcp, SIGNAL(connected()),this, SLOT(on_client_connected()));
+		disconnect(pSockTcp, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
+		disconnect(pSockTcp, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(displayError(QAbstractSocket::SocketError)));
+		disconnect(pSockTcp, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
+		m_clients.remove(pSockTcp);
+		pSockTcp->deleteLater();
+	}
+#endif
 }
 void QTcpClientTest::displayError(QAbstractSocket::SocketError /*err*/)
 {
 	QTcpSocket * sock = qobject_cast<QTcpSocket *> (sender());
 	if (sock)
 	{
+#if (ZP_WANTSSL!=0)
 		QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sock);
 		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
 		if (pSockSsl)
 			displayMessage(QString("client %1 error msg:").arg(pSockSsl->uuid())+sock->errorString());
 		else if (pSockTcp)
 			displayMessage(QString("client %1 error msg:").arg(pSockTcp->uuid())+sock->errorString());
+#else
+		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
+		if (pSockTcp)
+			displayMessage(QString("client %1 error msg:").arg(pSockTcp->uuid())+sock->errorString());
+#endif
 	}
 }
 void QTcpClientTest::new_data_recieved()
@@ -166,13 +214,18 @@ void QTcpClientTest::new_data_recieved()
 		if (array.size() <= sizeof(EXAMPLE_HEARTBEATING))
 			return;
 		//in this example, we just do nothing but to display the byte size.
+#if (ZP_WANTSSL!=0)
 		QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(pSock);
 		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(pSock);
 		if (pSockSsl)
 			displayMessage(QString("client %1 Recieved %2 bytes.").arg(pSockSsl->uuid()).arg(array.size()));
 		else if (pSockTcp)
 			displayMessage(QString("client %1 Recieved %2 bytes.").arg(pSockTcp->uuid()).arg(array.size()));
-
+#else
+		QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(pSock);
+		if (pSockTcp)
+			displayMessage(QString("client %1 Recieved %2 bytes.").arg(pSockTcp->uuid()).arg(array.size()));
+#endif
 	}
 }
 
@@ -191,6 +244,7 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 			foreach(QTcpSocket * pSock,listObj)
 			{
 				quint32 uuid = 0;
+#if (ZP_WANTSSL!=0)
 				QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(pSock);
 				QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(pSock);
 				if (pSockSsl)
@@ -199,6 +253,13 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 					uuid = pSockTcp->uuid();
 				else
 					continue;
+#else
+				QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(pSock);
+				if (pSockTcp)
+					uuid = pSockTcp->uuid();
+				else
+					continue;
+#endif
 
 				QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 				char * ptr = array.data();
@@ -206,10 +267,15 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 				pMsg->Mark = 0xBEBE;
 				pMsg->source_id = uuid;
 				pMsg->tmStamp = 0;
+#if (ZP_WANTSSL!=0)
 				if (pSockSsl)
 					pSockSsl->SendData(array);
 				else if (pSockTcp)
 					pSockTcp->SendData(array);
+#else
+				if (pSockTcp)
+					pSockTcp->SendData(array);
+#endif
 			}
 		}
 		foreach(QTcpSocket * sock,listObj)
@@ -217,6 +283,7 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 			if (rand()%1000<5)
 			{
 				quint32 uuid = 0;
+#if (ZP_WANTSSL!=0)
 				QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sock);
 				QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
 				if (pSockSsl)
@@ -225,6 +292,13 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 					uuid = pSockTcp->uuid();
 				else
 					continue;
+#else
+				QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
+				if (pSockTcp)
+					uuid = pSockTcp->uuid();
+				else
+					continue;
+#endif
 				quint16 nMsgLen = qrand()%(32)+nPayload-32-sizeof(EXAMPLE_TRANS_MSG);
 				QByteArray array(sizeof(EXAMPLE_TRANS_MSG) + nMsgLen - 1,0);
 				char * ptr = array.data();
@@ -237,11 +311,15 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 				pMsg->data_length = nMsgLen;
 				for (int i=0;i<nMsgLen;i++)
 					pMsg->data[i] = '0' + i%10;
-
+#if (ZP_WANTSSL!=0)
 				if (pSockSsl)
 					pSockSsl->SendData(array);
 				else if (pSockTcp)
 					pSockTcp->SendData(array);
+#else
+				if (pSockTcp)
+					pSockTcp->SendData(array);
+#endif
 			}
 		}
 		//
@@ -258,6 +336,7 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 					listObj.at(i)->abort();
 				}
 			}
+#if (ZP_WANTSSL!=0)
 			if (ui.checkBox_SSL->isChecked()==true)
 			{
 				QGHSslClient * client = new QGHSslClient(this,ui.horizontalSlider->value());
@@ -285,6 +364,16 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 				connect(client, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
 				client->connectToHost(ui.lineEdit_ip->text(),ui.lineEdit_Port->text().toUShort());
 			}
+#else
+			QGHTcpClient * client = new QGHTcpClient(this,ui.horizontalSlider->value());
+			m_clients[client] = QDateTime::currentDateTime();
+			connect(client, SIGNAL(readyRead()),this, SLOT(new_data_recieved()));
+			connect(client, SIGNAL(connected()),this, SLOT(on_client_connected()));
+			connect(client, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
+			connect(client, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(displayError(QAbstractSocket::SocketError)));
+			connect(client, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
+			client->connectToHost(ui.lineEdit_ip->text(),ui.lineEdit_Port->text().toUShort());
+#endif
 		}
 	}
 }

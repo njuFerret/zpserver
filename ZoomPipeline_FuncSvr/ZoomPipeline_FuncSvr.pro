@@ -53,7 +53,8 @@ HEADERS  += zpmainframe.h \
 	cluster/zp_clusternode.h \
 	smartlink/st_cross_svr_msg.h \
 	smartlink/st_cross_svr_node.h \
-    logger/st_logger.h
+    logger/st_logger.h \
+    network/ssl_config.h
 
 FORMS    += zpmainframe.ui \
 	dialogaddressinput.ui

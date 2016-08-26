@@ -1,5 +1,6 @@
 ﻿#include "zpmainframe.h"
 #include "ui_zpmainframe.h"
+#include "network/ssl_config.h"
 #include <QDateTime>
 #include <QDialog>
 #include <QSettings>
@@ -9,7 +10,9 @@
 #include <QMap>
 #include <QTcpSocket>
 #include <QThread>
+#if (ZP_WANTSSL!=0)
 #include <QSslSocket>
+#endif
 #include <QSystemTrayIcon>
 #include "smartlink/st_clientnode_basetrans.h"
 #include "dialogaddressinput.h"
