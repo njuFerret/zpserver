@@ -18,7 +18,7 @@ QTcpClientTest::QTcpClientTest(QWidget *parent, Qt::WindowFlags flags)
 	ui.horizontalSlider->setValue(settings.value("Payload","2048").toInt());
 	ui.label_load->setText(QString("Payload = %1").arg(settings.value("Payload","2048").toInt()));
 	ui.checkBox_SSL->setChecked(settings.value("SSL",false).toBool());
-	ui.lineEdit_globalFile->setText(settings.value("globalFile","/zpserver_syn.debug").toString());
+	ui.lineEdit_globalFile->setText(settings.value("globalFile","../zpserver_syn.debug").toString());
 	ui.listView_msg->setModel(&model);
 	m_maxUUID = 2;
 	m_minUUID = 0xffffffff;
@@ -89,12 +89,7 @@ void QTcpClientTest::on_client_connected()
 	if (pSockSsl)
 	{
 		pSockSsl->geneGlobalUUID(ui.lineEdit_globalFile->text());
-		if (pSockSsl->uuid()>m_maxUUID)
-			m_maxUUID = pSockSsl->uuid();
-		if (pSockSsl->uuid()<m_minUUID)
-			m_minUUID = pSockSsl->uuid();
-
-		displayMessage(QString("client %1 connected.").arg(pSockSsl->uuid()));
+			displayMessage(QString("client %1 connected.").arg(pSockSsl->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 		char * ptr = array.data();
 		EXAMPLE_HEARTBEATING * pMsg = (EXAMPLE_HEARTBEATING *)ptr;
@@ -106,10 +101,6 @@ void QTcpClientTest::on_client_connected()
 	else if (pSockTcp)
 	{
 		pSockTcp->geneGlobalUUID(ui.lineEdit_globalFile->text());
-		if (pSockTcp->uuid()>m_maxUUID)
-			m_maxUUID = pSockTcp->uuid();
-		if (pSockTcp->uuid()<m_minUUID)
-			m_minUUID = pSockTcp->uuid();
 
 		displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
@@ -125,12 +116,7 @@ void QTcpClientTest::on_client_connected()
 	if (pSockTcp)
 	{
 		pSockTcp->geneGlobalUUID(ui.lineEdit_globalFile->text());
-		if (pSockTcp->uuid()>m_maxUUID)
-			m_maxUUID = pSockTcp->uuid();
-		if (pSockTcp->uuid()<m_minUUID)
-			m_minUUID = pSockTcp->uuid();
-
-		displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
+			displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 		char * ptr = array.data();
 		EXAMPLE_HEARTBEATING * pMsg = (EXAMPLE_HEARTBEATING *)ptr;
@@ -276,8 +262,39 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 				if (pSockTcp)
 					pSockTcp->SendData(array);
 #endif
+				//calculate minUUID
+
 			}
 		}
+
+		//!re-calculate uuid max,min
+		m_maxUUID = 2;
+		m_minUUID = 0xffffffff;
+		foreach(QTcpSocket * sock,listObj)
+		{
+			quint32 uuid = 0;
+#if (ZP_WANTSSL!=0)
+			QGHSslClient * pSockSsl = qobject_cast<QGHSslClient*>(sock);
+			QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
+			if (pSockSsl)
+				uuid = pSockSsl->uuid();
+			else if (pSockTcp)
+				uuid = pSockTcp->uuid();
+			else
+				continue;
+#else
+			QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sock);
+			if (pSockTcp)
+				uuid = pSockTcp->uuid();
+			else
+				continue;
+#endif
+			if (uuid > m_maxUUID)
+				m_maxUUID = uuid;
+			if (uuid < m_minUUID)
+				m_minUUID = uuid;
+		}
+
 		foreach(QTcpSocket * sock,listObj)
 		{
 			if (rand()%1000<5)
