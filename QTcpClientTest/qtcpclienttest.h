@@ -21,7 +21,7 @@ private:
 	quint32 m_minUUID;
 	quint32 getRadomUUIDDestin();
 	Ui::QTcpClientTestClass ui;
-	QMap<QTcpSocket *, QDateTime> m_clients;
+	QMap<quint32, QTcpSocket *> m_clients;
 	int nTimer;
 	QStandardItemModel model;
 public slots:
