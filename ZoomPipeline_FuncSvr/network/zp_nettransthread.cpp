@@ -130,6 +130,7 @@ namespace ZPNetwork{
 
 		while (m_rabish_can.size()>=RUBBISH_CAN_SIZE)
 		{
+			if (m_extraData.contains(m_rabish_can.first())) m_extraData.remove(m_rabish_can.first());
 			m_rabish_can.first()->deleteLater();
 			m_set_rabish.remove(m_rabish_can.first());
 			m_rabish_can.pop_front();
@@ -161,6 +162,10 @@ namespace ZPNetwork{
 #endif
 		if (sock_client)
 		{
+			quint64 extraData = 0;
+			if (m_extraData.contains(sock_client))
+				extraData = m_extraData[sock_client];
+
 			//Initial content
 			if (true ==sock_client->setSocketDescriptor(socketDescriptor))
 			{
@@ -186,7 +191,7 @@ namespace ZPNetwork{
 #endif
 				qDebug()<<sock_client->peerAddress().toString()<<
 						  sock_client->peerPort()  <<tr("(%1)..Accepted.").arg((quint64)sock_client);
-				emit evt_NewClientConnected(sock_client);
+				emit evt_NewClientConnected(sock_client,extraData);
 				//emit evt_Message(sock_client,"Info>" +  QString(tr("Client Accepted.")));
 			}
 			else
@@ -202,7 +207,7 @@ namespace ZPNetwork{
 	 * @param addr address to which the socket should be connected.
 	 * @param port port to which the socket should be connected.
 	 */
-	void zp_netTransThread::startConnection(QObject * threadid,const QHostAddress & addr, quint16 port)
+	void zp_netTransThread::startConnection(QObject * threadid,const QHostAddress & addr, quint16 port, quint64 extraData)
 	{
 		if (threadid!=this)
 			return;
@@ -217,6 +222,7 @@ namespace ZPNetwork{
 #endif
 		if (sock_client)
 		{
+			m_extraData[sock_client] = extraData;
 #if (ZP_WANTSSL!=0)
 			if (m_bSSLConnection==true)
 			{
@@ -270,7 +276,9 @@ namespace ZPNetwork{
 	void zp_netTransThread::on_connected()
 	{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
-		emit evt_NewClientConnected(pSock);
+		quint64 extraData = 0;
+		if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+		emit evt_NewClientConnected(pSock,extraData);
 		emit evt_Message(pSock,"Info>" +  QString(tr("Client connected.")));
 		qDebug()<<pSock->peerAddress().toString()<<
 				  pSock->peerPort()  <<tr("(%1)..connected.").arg((quint64)pSock);
@@ -279,7 +287,9 @@ namespace ZPNetwork{
 	void zp_netTransThread::on_encrypted()
 	{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
-		emit evt_ClientEncrypted(pSock);
+		quint64 extraData = 0;
+		if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+		emit evt_ClientEncrypted(pSock,extraData);
 		//emit evt_Message(pSock,"Info>" +  QString(tr("Client Encrypted.")));
 		qDebug()<<pSock->peerAddress().toString()<<
 				  pSock->peerPort()  <<tr("(%1)..Encrypted.").arg((quint64)pSock);
@@ -290,6 +300,9 @@ namespace ZPNetwork{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
 		if (pSock)
 		{
+			quint64 extraData = 0;
+			if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+
 #if (ZP_WANTSSL!=0)
 			if (m_bSSLConnection)
 			{
@@ -310,7 +323,7 @@ namespace ZPNetwork{
 			m_clientList.remove(pSock);
 			m_mutex_protect.unlock();
 			//pSock->abort();
-			emit evt_ClientDisconnected(pSock);
+			emit evt_ClientDisconnected(pSock,extraData);
 			emit evt_Message(pSock,"Info>" +  QString(tr("Client Closed.")));
 			qDebug()<<tr("(%1)..Closed.").arg((quint64)pSock);
 			push_to_rabish_can(pSock);
@@ -321,13 +334,16 @@ namespace ZPNetwork{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
 		if (pSock)
 		{
+			quint64 extraData = 0;
+			if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+
 			QByteArray array = pSock->readAll();
 			int sz = array.size();
 			g_mutex_sta.lock();
 			g_bytesRecieved +=sz;
 			g_secRecieved += sz;
 			g_mutex_sta.unlock();
-			emit evt_Data_recieved(pSock,array);
+			emit evt_Data_recieved(pSock,array,extraData);
 		}
 	}
 	/**
@@ -346,7 +362,10 @@ namespace ZPNetwork{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
 		if (pSock)
 		{
-			emit evt_Data_transferred(pSock,wsended);
+			quint64 extraData = 0;
+			if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+
+			emit evt_Data_transferred(pSock,wsended,extraData);
 			QList<QByteArray> & list_sock_data = m_buffer_sending[pSock];
 			QList<qint64> & list_offset = m_buffer_sending_offset[pSock];
 			while (list_sock_data.empty()==false)
@@ -372,9 +391,12 @@ namespace ZPNetwork{
 		QTcpSocket * pSock = qobject_cast<QTcpSocket*>(sender());
 		if (pSock)
 		{
+			quint64 extraData = 0;
+			if (m_extraData.contains(pSock)) extraData = m_extraData[pSock];
+
 			qDebug()<<pSock->peerAddress().toString()<<
 					  pSock->peerPort()  <<tr("(%1)..Error :%2.").arg((quint64)pSock).arg(pSock->errorString());
-			emit evt_SocketError(pSock,socketError);
+			emit evt_SocketError(pSock,socketError,extraData);
 #if (ZP_WANTSSL!=0)
 			if (m_bSSLConnection)
 			{
@@ -394,7 +416,7 @@ namespace ZPNetwork{
 			m_clientList.remove(pSock);
 			m_mutex_protect.unlock();
 			pSock->abort();
-			emit evt_ClientDisconnected(pSock);
+			emit evt_ClientDisconnected(pSock,extraData);
 			emit evt_Message(pSock,"Info>" +  QString(tr("Client Error, Closed.")));
 			//pSock->disconnectFromHost();
 			push_to_rabish_can(pSock);

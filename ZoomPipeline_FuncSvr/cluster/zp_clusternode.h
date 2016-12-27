@@ -80,7 +80,7 @@ namespace ZP_Cluster{
 	signals:
 		void evt_SendDataToClient(QObject * objClient,QByteArray   dtarray);
 		void evt_close_client(QObject * objClient);
-		void evt_connect_to(const QHostAddress & address , quint16 nPort,bool bSSLConn);
+		void evt_connect_to(const QHostAddress & address , quint16 nPort,bool bSSLConn, quint64);
 		void evt_Message (QObject * psource,QString );
 
 		//Notify Messages

@@ -420,9 +420,11 @@ namespace ZPNetwork{
 	 * @param address the address to connect to
 	 * @param nPort port to connect to
 	 * @param bSSLConn if true, SSL connections will be used
+	 * @param extraData Extra data for users to remember extra imformation for this connection.this message will be
+	 *        given back when on_connect is called.
 	 * @return bool
 	 */
-	bool zp_net_Engine::connectTo (const QHostAddress & address , quint16 nPort,bool bSSLConn)
+	bool zp_net_Engine::connectTo (const QHostAddress & address , quint16 nPort,bool bSSLConn, quint64 extraData)
 	{
 		bool res= false;
 		//m_mutex_trans.lock();
@@ -453,7 +455,7 @@ namespace ZPNetwork{
 		if (nMinIdx>=0 && nMinIdx<nsz)
 		{
 			res = true;
-			emit evt_FireConnection(m_vec_NetTransThreads[nMinIdx],address,nPort);
+			emit evt_FireConnection(m_vec_NetTransThreads[nMinIdx],address,nPort,extraData);
 		}
 		else
 		{

@@ -8,7 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = $$OUT_PWD/../bin/FunctionalClientTest
+TARGET = FunctionalClientTest
 TEMPLATE = app
 
 

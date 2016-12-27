@@ -129,7 +129,7 @@ namespace ZP_Cluster{
 	}
 	bool zp_ClusterTerm::JoinCluster(const QHostAddress &addr, int nPort,bool bSSL)
 	{
-		return m_pClusterNet->connectTo(addr,nPort,bSSL);
+		return m_pClusterNet->connectTo(addr,nPort,bSSL,0);
 	}
 	bool zp_ClusterTerm::canExit()
 	{

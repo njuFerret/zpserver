@@ -53,12 +53,14 @@ namespace ZPNetwork{
 		QList<QObject *> m_rabish_can;
 		QSet<QObject *> m_set_rabish;
 		QMutex m_mutex_rabish_can;
+		//Extra Data
+		QHash<QObject *, quint64> m_extraData;
 		void push_to_rabish_can(QObject * deletedobj);
 	public slots:
 		//This slot dealing with multi-thread client socket accept.
 		void incomingConnection(QObject * threadid,qintptr socketDescriptor);
 		//This slot dealing with possive connecting-to method.
-		void startConnection(QObject * threadid,const QHostAddress & addr, quint16 port);
+		void startConnection(QObject * threadid,const QHostAddress & addr, quint16 port, quint64 extraData);
 		//sending dtarray to objClient. dtarray will be pushed into m_buffer_sending
 		void SendDataToClient(QObject * objClient,QByteArray   dtarray);
 		//Set terminate mark, the thread will quit after last client quit.
@@ -82,12 +84,12 @@ namespace ZPNetwork{
 		void on_encrypted();
 	signals:
 		void evt_Message(QObject * psource,QString );
-		void evt_SocketError(QObject * senderSock ,QAbstractSocket::SocketError socketError);
-		void evt_NewClientConnected(QObject * client);
-		void evt_ClientEncrypted(QObject * client);
-		void evt_ClientDisconnected(QObject * client);
-		void evt_Data_recieved(QObject * ,QByteArray   );
-		void evt_Data_transferred(QObject * client,qint64);
+		void evt_SocketError(QObject * senderSock ,QAbstractSocket::SocketError socketError, quint64 extraData);
+		void evt_NewClientConnected(QObject * client, quint64 extraData);
+		void evt_ClientEncrypted(QObject * client, quint64 extraData);
+		void evt_ClientDisconnected(QObject * client, quint64 extraData);
+		void evt_Data_recieved(QObject * ,QByteArray   , quint64 extraData);
+		void evt_Data_transferred(QObject * client,qint64, quint64 extraData);
 	};
 }
 #endif // ZP_NETTRANSTHREAD_H

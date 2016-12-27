@@ -75,24 +75,24 @@ namespace ZPNetwork{
 
 		void evt_Message(QObject * pSource,QString );
 		//The socket error message
-		void evt_SocketError(QObject * senderSock ,QAbstractSocket::SocketError socketError);
+		void evt_SocketError(QObject * senderSock ,QAbstractSocket::SocketError socketError, quint64 extraData);
 		//this event indicates new client connected.
-		void evt_NewClientConnected(QObject * /*clientHandle*/);
+		void evt_NewClientConnected(QObject * /*clientHandle*/, quint64 extraData);
 		//SSL Connections OK
-		void evt_ClientEncrypted(QObject * client);
+		void evt_ClientEncrypted(QObject * client, quint64 extraData);
 		//this event indicates a client disconnected.
-		void evt_ClientDisconnected(QObject * /*clientHandle*/);
+		void evt_ClientDisconnected(QObject * /*clientHandle*/, quint64 extraData);
 		//some data arrival
-		void evt_Data_recieved(QObject *  /*clientHandle*/,QByteArray  /*datablock*/ );
+		void evt_Data_recieved(QObject *  /*clientHandle*/,QByteArray  /*datablock*/ , quint64 extraData);
 		//a block of data has been successfuly sent
-		void evt_Data_transferred(QObject *   /*clientHandle*/,qint64 /*bytes sent*/);
+		void evt_Data_transferred(QObject *   /*clientHandle*/,qint64 /*bytes sent*/, quint64 extraData);
 
 		//Internal Message for ctrl.------------------------------------
 		//Listen Control
 		void startListen(QString  id);
 		void stopListen(QString  id);
 		void evt_EstablishConnection(QObject * threadid,qintptr socketDescriptor);
-		void evt_FireConnection(QObject * threadid,const QHostAddress & hostAddr, quint16 port);
+		void evt_FireConnection(QObject * threadid,const QHostAddress & hostAddr, quint16 port, quint64 extraData);
 		//Trans Control,for intenal thread usage
 		void evt_SendDataToClient(QObject * objClient,QByteArray   dtarray);
 		void evt_KickClient(QObject *);
@@ -109,7 +109,7 @@ namespace ZPNetwork{
 		void KickClients(QObject * object);
 
 		//Possive Connection Methods
-		bool connectTo (const QHostAddress & address , quint16 nPort,bool bSSLConn);
+		bool connectTo (const QHostAddress & address , quint16 nPort,bool bSSLConn, quint64 extraData);
 
 	};
 }

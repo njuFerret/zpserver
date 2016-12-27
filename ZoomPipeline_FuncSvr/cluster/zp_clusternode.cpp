@@ -307,7 +307,7 @@ namespace ZP_Cluster{
 						//because cross-connection is not good, we just want the low Addr:port connect to max Addr:Port.
 						//Connect to New Servers
 						if (strName > m_pTerm->name())
-							emit evt_connect_to(addrToConnectTo,PortToConnectTo,false);
+							emit evt_connect_to(addrToConnectTo,PortToConnectTo,false,0);
 						else
 							emit evt_Message(this,tr("Name %1 <= %2, omitted.").arg(strName).arg(m_pTerm->name()));
 					}
