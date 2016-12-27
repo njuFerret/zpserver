@@ -52,7 +52,7 @@ void QTcpClientTest::on_action_Connect_triggered(bool bConn)
 	{
 		killTimer(nTimer);
 		ui.dockWidget->setEnabled(true);
-		QList<QTcpSocket*> listObj = m_clients.keys();
+		QList<QTcpSocket*> listObj = m_clients.values();
 		foreach(QTcpSocket * sock,listObj)
 			sock->disconnectFromHost();
 
@@ -88,8 +88,7 @@ void QTcpClientTest::on_client_connected()
 
 	if (pSockSsl)
 	{
-		pSockSsl->geneGlobalUUID(ui.lineEdit_globalFile->text());
-			displayMessage(QString("client %1 connected.").arg(pSockSsl->uuid()));
+		displayMessage(QString("client %1 connected.").arg(pSockSsl->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 		char * ptr = array.data();
 		EXAMPLE_HEARTBEATING * pMsg = (EXAMPLE_HEARTBEATING *)ptr;
@@ -100,8 +99,6 @@ void QTcpClientTest::on_client_connected()
 	}
 	else if (pSockTcp)
 	{
-		pSockTcp->geneGlobalUUID(ui.lineEdit_globalFile->text());
-
 		displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 		char * ptr = array.data();
@@ -115,8 +112,7 @@ void QTcpClientTest::on_client_connected()
 	QGHTcpClient * pSockTcp = qobject_cast<QGHTcpClient*>(sender());
 	if (pSockTcp)
 	{
-		pSockTcp->geneGlobalUUID(ui.lineEdit_globalFile->text());
-			displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
+		displayMessage(QString("client %1 connected.").arg(pSockTcp->uuid()));
 		QByteArray array(sizeof(EXAMPLE_HEARTBEATING),0);
 		char * ptr = array.data();
 		EXAMPLE_HEARTBEATING * pMsg = (EXAMPLE_HEARTBEATING *)ptr;
@@ -141,7 +137,7 @@ void QTcpClientTest::on_client_disconnected()
 		disconnect(pSockSsl, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
 		disconnect(pSockSsl, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(displayError(QAbstractSocket::SocketError)));
 		disconnect(pSockSsl, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
-		m_clients.remove(pSockSsl);
+		m_clients.remove(pSockSsl->uuid());
 		pSockSsl->deleteLater();
 	}
 	else if (pSockTcp)
@@ -153,7 +149,7 @@ void QTcpClientTest::on_client_disconnected()
 		disconnect(pSockTcp, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
 		disconnect(pSockTcp, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(displayError(QAbstractSocket::SocketError)));
 		disconnect(pSockTcp, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
-		m_clients.remove(pSockTcp);
+		m_clients.remove(pSockTcp->uuid());
 		pSockTcp->deleteLater();
 	}
 #else
@@ -167,7 +163,7 @@ void QTcpClientTest::on_client_disconnected()
 		disconnect(pSockTcp, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
 		disconnect(pSockTcp, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(displayError(QAbstractSocket::SocketError)));
 		disconnect(pSockTcp, SIGNAL(bytesWritten(qint64)), this, SLOT(on_client_trasferred(qint64)));
-		m_clients.remove(pSockTcp);
+		m_clients.remove(pSockTcp->uuid());
 		pSockTcp->deleteLater();
 	}
 #endif
@@ -222,7 +218,7 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 	{
 		int nTotalClients = ui.dial->value();
 		int nPayload = ui.horizontalSlider->value();
-		QList<QTcpSocket*> listObj = m_clients.keys();
+		QList<QTcpSocket*> listObj = m_clients.values();
 		nCount++;
 		if (nCount % 100 == 0)
 		{
@@ -347,18 +343,18 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 			if (m_clients.size()>nTotalClients)
 			{
 				int nDel = m_clients.size()-nTotalClients;
-				QList<QTcpSocket*> listObj = m_clients.keys();
+				QList<quint32> listObj = m_clients.keys();
 				for (int i=0;i<nDel;i++)
 				{
-					listObj.at(i)->abort();
+					m_clients[listObj.at(i)]->abort();
 				}
 			}
 #if (ZP_WANTSSL!=0)
 			if (ui.checkBox_SSL->isChecked()==true)
 			{
 				QGHSslClient * client = new QGHSslClient(this,ui.horizontalSlider->value());
-				//client->connectToHost(ui.lineEdit_ip->text(),ui.lineEdit_Port->text().toUShort());
-				m_clients[client] = QDateTime::currentDateTime();
+				client->geneGlobalUUID(ui.lineEdit_globalFile->text());
+				m_clients[client->uuid()] = client;
 				connect(client, SIGNAL(readyRead()),this, SLOT(new_data_recieved()));
 				//connect(client, SIGNAL(connected()),this, SLOT(on_client_connected()));
 				connect(client, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
@@ -373,7 +369,8 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 			else
 			{
 				QGHTcpClient * client = new QGHTcpClient(this,ui.horizontalSlider->value());
-				m_clients[client] = QDateTime::currentDateTime();
+				client->geneGlobalUUID(ui.lineEdit_globalFile->text());
+				m_clients[client->uuid()] = client;
 				connect(client, SIGNAL(readyRead()),this, SLOT(new_data_recieved()));
 				connect(client, SIGNAL(connected()),this, SLOT(on_client_connected()));
 				connect(client, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
@@ -383,7 +380,8 @@ void QTcpClientTest::timerEvent(QTimerEvent * evt)
 			}
 #else
 			QGHTcpClient * client = new QGHTcpClient(this,ui.horizontalSlider->value());
-			m_clients[client] = QDateTime::currentDateTime();
+			client->geneGlobalUUID(ui.lineEdit_globalFile->text());
+			m_clients[client->uuid()] = client;
 			connect(client, SIGNAL(readyRead()),this, SLOT(new_data_recieved()));
 			connect(client, SIGNAL(connected()),this, SLOT(on_client_connected()));
 			connect(client, SIGNAL(disconnected()),this,SLOT(on_client_disconnected()));
