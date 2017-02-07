@@ -5,3 +5,7 @@ openssl genrsa -out svr_privkey.pem 4096
 openssl req -new -key svr_privkey.pem -out svr_cert.csr
 
 openssl ca -keyfile ca_privkey.pem -outdir . -in svr_cert.csr -out svr_cert.pem -cert ca_cert.pem -days 7200
+
+openssl pkcs12 -export -out iiscert.pfx -inkey svr_privkey.pem -in svr_cert.pem
+
+openssl pkcs12 -export -out ca_cert.pfx -in ca_cert.pem
